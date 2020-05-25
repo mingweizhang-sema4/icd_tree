@@ -21,6 +21,8 @@ let root = d3.stratify()
 
 let treemap = d3.tree().nodeSize([20, null]);
 
+let searchResult = []
+
 let svg = d3.select('body').append('svg')
 	.attr("width", width + margin.right + margin.left)
 	.attr("height", height + margin.top + margin.bottom)
@@ -175,16 +177,8 @@ function update(source) {
 			return d.children || d._children ? "end" : "start";
 		})
 		.text(function (d) {
-			let combined = d.data.icd + d.data.description + " :" + d.data.pc
-			// return combined
-
-			if (d.depth === 1) {
-				return combined
-				// return d.name;
-			} else {
-				return combined
-				// return d.name;
-			}
+			let combined = d.data.icd != 'root' ? d.data.icd + " " + d.data.description + " :" + d.data.pc : d.data.description + " :" + d.data.pc 
+			return combined
 		})
 		.style("fill-opacity", 1e-6);
 
@@ -269,23 +263,23 @@ function toggle(d) {
 }
 
 function resizeSVG(rightDepth) {
-	let nodes = treeData.descendants(),
+	let nodes = root.descendants(),
 		maxHeight = 0,
 		maxWidth = 0,
 		lastDepth = 0;
 
 	nodes.forEach(function (d) {
-		if (d.x0 > maxHeight) {
-			maxHeight = d.x0;
+		if (d.x > maxHeight) {
+			maxHeight = d.x;
 		}
 
-		if (d.y0 > maxWidth) {
-			maxWidth = d.y0;
+		if (d.y > maxWidth) {
+			maxWidth = d.y;
 		}
 	});
-
+	maxHeight += 10
 	maxHeight *= 2;
-	maxHeight += 150;
+	
 
 	lastDepth = rightDepth[Math.max.apply(Math, (Object.keys(rightDepth)).map(function (item) {
 		return Number(item);
@@ -305,4 +299,19 @@ function resizeSVG(rightDepth) {
 	}
 }
 
+function condenseChildren(d){
+	if(d.children){
+		d.children.forEach(condenseChildren)
+		toggle(d)
+	}
+}
 
+function collapseAll(){
+	root.children.forEach(condenseChildren)
+	update(root)
+}
+
+function searchByNodeName(searchKey) {
+	searchResult = []
+	collapseAll()
+}
