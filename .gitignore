@@ -1,0 +1,8 @@
+*.swp
+__pycache__
+*.csv
+scripts/node_modules
+.DS_store
+sample
+raw_data
+raw_data/*
