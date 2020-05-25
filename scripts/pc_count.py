@@ -75,6 +75,11 @@ def generate_set_df(df_icd, df_tree):
 	count_df(df_tree, person_key_set_list)
 	return df_tree
 
+def format_tree(tree):
+	to_be_changed_row = tree.icd.str.contains('-')
+	tree.loc[to_be_changed_row, 'description'] = tree[to_be_changed_row].description.apply(lambda x: x.split('(')[0].strip())
+	return tree
+
 def main():
 	icd_person = pd.read_csv(icd_person_path,sep=';')
 	tree = pd.read_csv(tree_file_path)
@@ -85,7 +90,8 @@ def main():
 	#tree = pd.read_csv(testing_tree_file_path)
 	missing_data = clean_icd_person(icd_person, tree)
 	final_df = generate_set_df(icd_person, tree)
-	final_df.to_csv('../raw_data/final_count.csv',sep=';', index=False)
+	final_df = format_tree(final_df)
+	final_df.to_csv('../raw_data/final_count.csv',sep=',', index=False)
 	print(missing_data)
 	missing_data.to_csv('../raw_data/missing_values.csv',sep=';', index=False)
 
