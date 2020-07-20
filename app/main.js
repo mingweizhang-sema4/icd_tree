@@ -269,8 +269,8 @@ function resizeSVG(rightDepth) {
 		lastDepth = 0;
 
 	nodes.forEach(function (d) {
-		if (d.x > maxHeight) {
-			maxHeight = d.x;
+		if (Math.abs(d.x) > maxHeight) {
+			maxHeight = Math.abs(d.x)
 		}
 
 		if (d.y > maxWidth) {
@@ -311,7 +311,30 @@ function collapseAll(){
 	update(root)
 }
 
-function searchByNodeName(searchKey) {
-	searchResult = []
+function searchForAll(searchKey){
+	if(/[A-TV-Z][0-9][0-9AB]\.?[0-9A-TV-Z]{0,4}/.test(searchKey)){
+		searchByICD(searchKey)
+	} else {
+		if (/^\s+/.test(searchKey)){
+			collapseAll()
+			return
+		}
+		searchByName(searchKey)
+	}
+}
+
+function searchByICD(searchKey) {
 	collapseAll()
+}
+
+function searchPrivateChildren(d, searchKey){
+	
+}
+
+function searchByName(searchKey){
+
+}
+
+function highlightResult(searchKey){
+
 }
